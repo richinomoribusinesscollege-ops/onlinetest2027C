@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>学校法人理知の杜　理知の杜ビジネス専門学校　オンライン試験C</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- パスワード入力画面 -->
+<div id="passwordScreen" class="container">
+    <div class="card" style="text-align:center;">
+        <h2>オンライン入試</h2>
+        <p>試験用パスワードを入力してください。</p>
+
+        <input
+            type="password"
+            id="examPassword"
+            placeholder="パスワード"
+            autocomplete="off"
+            style="width:100%;max-width:400px;padding:12px;font-size:16px;"
+        >
+
+        <p id="passwordError"
+           style="color:red;display:none;">
+            パスワードが正しくありません。
+        </p>
+
+        <button class="start-btn"
+                onclick="checkPassword()">
+            次へ進む
+        </button>
+    </div>
+</div>
+
+<header style="display:none;">
+    <h1>学校法人理知の杜<br>理知の杜ビジネス専門学校<br>入学試験C</h1>
+</header>
+
+
+<!-- =========================
+     スタート画面
+========================= -->
+<div id="startScreen" class="container" style="display:none;">
+
+    <div class="card">
+
+        <h2>10月○日　オンライン入試</h2>
+
+        <p>
+    ①　<ruby>試験<rt>しけん</rt></ruby>を<ruby>始<rt>はじ</rt></ruby>める<ruby>合図<rt>あいず</rt></ruby>があるまで、<ruby>問題<rt>もんだい</rt></ruby>を<ruby>開<rt>ひら</rt></ruby>かないでください。
+<br>
+②　<ruby>質問<rt>しつもん</rt></ruby>があるときは、<ruby>試験監督<rt>しけんかんとく</rt></ruby>に<ruby>聞<rt>き</rt></ruby>いてください。
+<br>
+③　<ruby>問題<rt>もんだい</rt></ruby>の<ruby>画面<rt>がめん</rt></ruby>を<ruby>写真<rt>しゃしん</rt></ruby>に<ruby>撮<rt>と</rt></ruby>ったり、スクリーンショットをしたり、ほかの<ruby>人<rt>ひと</rt></ruby>に<ruby>見<rt>み</rt></ruby>せたりしないでください。
+<br>
+④　<ruby>試験中<rt>しけんちゅう</rt></ruby>は、ほかのウェブサイトやアプリを<ruby>開<rt>ひら</rt></ruby>かないでください。
+<br>
+⑤　パソコンに<ruby>問題<rt>もんだい</rt></ruby>が<ruby>起<rt>お</rt></ruby>きたりしたときは、あわてないで<ruby>試験監督<rt>しけんかんとく</rt></ruby>の<ruby>指示<rt>しじ</rt></ruby>にしたがってください。
+        </p>
+<img src="images/sample.png" alt="sample">
+
+
+        <input
+            type="text"
+            id="userName"
+            placeholder="名前を入力してください"
+        >
+
+        <input
+            type="text"
+            id="examNumber"
+            placeholder="受験番号を入力してください"
+        >
+
+        <button
+            class="start-btn"
+            onclick="startExam()"
+        >
+            試験を開始する
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     試験画面
+========================= -->
+
+<div id="examScreen" style="display:none;">
+
+   <div id="timer">
+    <span id="timeText">残り時間：40:00</span>
+    <span class="status-divider">｜</span>
+    <span id="answerStatus">
+        回答状況：<span id="answeredCount">0</span> / 
+        <span id="totalQuestionCount">0</span>問
+    </span>
+</div>
+
+    <div class="container">
+
+        <div id="questionList"></div>
+
+        <div class="submit-area">
+
+            <button
+                id="submitBtn"
+                onclick="submitExam()"
+            >
+                試験を終了して提出する
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+     別ページ移動警告
+========================= -->
+<!-- =========================
+     送信失敗画面
+========================= -->
+
+<div id="sendErrorScreen" class="container">
+
+    <div class="card">
+
+        <h2 class="send-error-title">
+            ⚠ 試験を送信できませんでした
+        </h2>
+
+        <p>
+            Googleスプレッドシートへの送信に失敗しました。
+        </p>
+
+        <p>
+            下の解答を担当者に伝えてください。
+        </p>
+
+        <div class="answer-info">
+
+            <p>
+                <strong>名前：</strong>
+                <span id="errorUserName"></span>
+            </p>
+
+            <p>
+                <strong>受験番号：</strong>
+                <span id="errorExamNumber"></span>
+            </p>
+
+        </div>
+
+        <h3>あなたの解答</h3>
+
+        <div id="answerOnlyList"></div>
+
+    </div>
+
+</div>
+<div id="warningScreen">
+
+    <div class="warning-box">
+
+        <div class="warning-icon">⚠</div>
+
+        <h2>試験中は他のページを開かないでください</h2>
+
+        <p>
+            試験中に別のページやタブを開くことはできません。
+        </p>
+
+        <p>
+            試験に戻って、続きを行ってください。
+        </p>
+
+        <button onclick="returnToExam()">
+            試験に戻る
+        </button>
+
+    </div>
+
+</div>
+<!-- =========================
+     送信完了画面
+========================= -->
+
+<div id="completeScreen" class="container">
+
+    <div class="card">
+
+        <h2 class="complete-title">
+            ✓ 試験を提出しました
+        </h2>
+
+        <p class="complete-message">
+            試験は終了です。
+        </p>
+
+        <p class="save-message">
+            念のため、下の解答を保存してください。
+        </p>
+
+        <div class="answer-info">
+
+            <p>
+                <strong>名前：</strong>
+                <span id="completeUserName"></span>
+            </p>
+
+            <p>
+                <strong>受験番号：</strong>
+                <span id="completeExamNumber"></span>
+            </p>
+
+        </div>
+
+        <h3>あなたの解答</h3>
+
+        <div id="completeAnswerList"></div>
+
+    </div>
+
+</div>
+
+
+
+
+<script>
+
+/* ==================================================
+   問題データ
+================================================== */
+
+
+/* ----------------------------------
+   ① 漢字の読み
+   30問 → 本番10問
+   1問1点
+---------------------------------- */
+
+const pool1 = [
+
+    { image:"images/kanji_yomi/01.png", answer:4 },
+    { image:"images/kanji_yomi/02.png", answer:1 },
+    { image:"images/kanji_yomi/03.png", answer:3 },
+    { image:"images/kanji_yomi/04.png", answer:4 },
+    { image:"images/kanji_yomi/05.png", answer:1 },
+    { image:"images/kanji_yomi/06.png", answer:1 },
+    { image:"images/kanji_yomi/07.png", answer:4 },
+    { image:"images/kanji_yomi/08.png", answer:1 },
+    { image:"images/kanji_yomi/09.png", answer:2 },
+    { image:"images/kanji_yomi/10.png", answer:1 },
+
+];
+
+
+/* ----------------------------------
+   ② 漢字を選ぶ
+   30問 → 本番10問
+   1問2点
+---------------------------------- */
+
+const pool2 = [
+
+    { image:"images/kanji_choice/01.png", answer:1 },
+    { image:"images/kanji_choice/02.png", answer:4 },
+    { image:"images/kanji_choice/03.png", answer:1 },
+    { image:"images/kanji_choice/04.png", answer:2 },
+    { image:"images/kanji_choice/05.png", answer:4 },
+    { image:"images/kanji_choice/06.png", answer:1 },
+    { image:"images/kanji_choice/07.png", answer:4 },
+    { image:"images/kanji_choice/08.png", answer:2 },
+    { image:"images/kanji_choice/09.png", answer:1 },
+    { image:"images/kanji_choice/10.png", answer:2 },
+
+];
+
+
+
+/* ----------------------------------
+   ③ 語彙
+   10問
+   1問3点
+---------------------------------- */
+
+const pool3 = [
+
+    { image:"images/goi/01.png", answer:2 },
+    { image:"images/goi/02.png", answer:3 },
+    { image:"images/goi/03.png", answer:3 },
+    { image:"images/goi/04.png", answer:3 },
+    { image:"images/goi/05.png", answer:3 },
+    { image:"images/goi/06.png", answer:3 },
+    { image:"images/goi/07.png", answer:2 },
+    { image:"images/goi/08.png", answer:3 },
+    { image:"images/goi/09.png", answer:2 },
+    { image:"images/goi/10.png", answer:4 },
+
+
+
+
+];
+
+
+
+/* ----------------------------------
+   ④文法
+   10問
+   1問2点
+---------------------------------- */
+
+const pool4 = [
+
+    { image:"images/grammar/01.png", answer:4 },
+    { image:"images/grammar/02.png", answer:3 },
+    { image:"images/grammar/03.png", answer:4 },
+    { image:"images/grammar/04.png", answer:1 },
+    { image:"images/grammar/05.png", answer:2 },
+    { image:"images/grammar/06.png", answer:1 },
+    { image:"images/grammar/07.png", answer:3 },
+    { image:"images/grammar/08.png", answer:3 },
+    { image:"images/grammar/09.png", answer:4 },
+    { image:"images/grammar/10.png", answer:2 },
+
+];
+
+/* ----------------------------------
+   ⑤ ことばの意味
+   2問 
+   1問5点
+---------------------------------- */
+
+const pool5 = [
+
+    { image:"images/mean/01.png", answer:3 },
+    { image:"images/mean/02.png", answer:2 }
+];
+
+
+/* ----------------------------------
+   ⑥ 読解
+   2問
+   1問5点
+---------------------------------- */
+
+const pool6 = [
+
+    {
+        image:"images/reading/01.png",
+        answer:4
+    },
+
+    {
+        image:"images/reading/02.png",
+        answer:1
+    }
+
+];
+
+
+
+
+function checkPassword() {
+    const password = document.getElementById("examPassword").value;
+    const correctPassword = "rbc20261";
+
+    if (password === correctPassword) {
+        // パスワード画面を隠す
+        document.getElementById("passwordScreen").style.display = "none";
+
+        // 学校名と受験者入力画面を表示する
+        document.querySelector("header").style.display = "block";
+        document.getElementById("startScreen").style.display = "block";
+
+    } else {
+        document.getElementById("passwordError").style.display = "block";
+        document.getElementById("examPassword").value = "";
+        document.getElementById("examPassword").focus();
+    }
+}
+
+
+
+/* ==================================================
+   共通設定
+================================================== */
+
+let examQuestions = [];
+
+let userName = "";
+let examNumber = "";
+
+let timeLeft = 40 * 60;
+
+let timerInterval;
+
+
+/* ==================================================
+   ランダム取得
+================================================== */
+
+function randomQuestions(pool, count){
+
+    const shuffled = [...pool];
+
+    for(let i = shuffled.length - 1; i > 0; i--){
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [shuffled[i], shuffled[j]]
+        =
+        [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled.slice(0, count);
+}
+
+/* ==================================================
+   試験中のページ移動対策
+================================================== */
+
+let isExamRunning = false;
+
+/* ==================================================
+   別タブ・別ページへ移動したときの警告
+================================================== */
+
+document.addEventListener("visibilitychange", function(){
+
+    if(!isExamRunning){
+        return;
+    }
+
+
+    if(document.hidden){
+
+        document
+            .getElementById("examScreen")
+            .style.display = "none";
+
+
+        document
+            .getElementById("warningScreen")
+            .style.display = "flex";
+
+    }
+
+});
+/* ==================================================
+   試験開始
+================================================== */
+function startExam(){
+
+    userName =
+        document.getElementById("userName").value.trim();
+
+    examNumber =
+        document.getElementById("examNumber").value.trim();
+
+
+    if(!userName){
+
+        alert("名前を入力してください。");
+        return;
+
+    }
+
+
+    if(!examNumber){
+
+        alert("受験番号を入力してください。");
+        return;
+
+    }
+    /* 試験中フラグ */
+
+    isExamRunning = true;
+
+    /* --------------------------------
+       ランダムに問題を選ぶ
+    -------------------------------- */
+
+    examQuestions = [];
+
+
+    /* ① 漢字の読み */
+
+    randomQuestions(pool1,10)
+    .forEach(q => {
+
+        examQuestions.push({
+            ...q,
+            section:1,
+            points:1
+        });
+
+    });
+
+
+    /* ② 漢字を選ぶ */
+
+    randomQuestions(pool2,10)
+    .forEach(q => {
+
+        examQuestions.push({
+            ...q,
+            section:2,
+            points:2
+        });
+
+    });
+
+
+    /* ③ 文法 */
+
+    randomQuestions(pool3,10)
+    .forEach(q => {
+
+        examQuestions.push({
+            ...q,
+            section:3,
+            points:3
+        });
+
+    });
+
+
+/* ④ 語彙問題：ランダムに10問 */
+
+randomQuestions(pool4, 10)
+.forEach(q => {
+
+    examQuestions.push({
+        ...q,
+        section: 4,
+        points: 2
+    });
+
+});
+
+
+
+
+    /* ⑤ 並べかえ */
+
+    randomQuestions(pool5,2)
+    .forEach(q => {
+
+        examQuestions.push({
+            ...q,
+            section:5,
+            points:5
+        });
+
+    });
+
+
+    /* ⑥ 読解 */
+
+    pool6.forEach(q => {
+
+        examQuestions.push({
+
+            ...q,
+
+            section:6,
+
+            points:5
+
+        });
+
+    });
+
+
+    /* --------------------------------
+       画面切り替え
+    -------------------------------- */
+
+    document
+        .getElementById("startScreen")
+        .style.display = "none";
+
+    document
+        .getElementById("examScreen")
+        .style.display = "block";
+
+
+    // 回答状況を初期化
+document.getElementById("totalQuestionCount").textContent =
+    examQuestions.length;
+
+document.getElementById("answeredCount").textContent = "0";
+
+renderQuestions();
+
+startTimer();
+
+}
+
+
+/* ==================================================
+   問題表示
+================================================== */
+
+function renderQuestions(){
+
+    const list =
+        document.getElementById("questionList");
+
+    list.innerHTML = "";
+
+
+    let currentSection = 0;
+
+
+    examQuestions.forEach((q,index) => {
+
+
+        /* セクション見出し */
+
+        if(q.section !== currentSection){
+
+            currentSection = q.section;
+
+
+            const sectionTitle =
+                document.createElement("div");
+
+            sectionTitle.className =
+                "section-title";
+
+
+            const titles = {
+
+                1:"【1】＿＿＿＿のことばは ひらがなで どう かきますか。1・２・３・４からいちばん いい ものを ひとつ えらんで ください。",
+
+                2:"【2】_______のことばは どう かきますか。１・２・３・４から いちばん いいものを ひとつ えらんで ください。",
+
+                3:"【3】（ 　）に 何を いれますか。１・２・３・４から いちばん いいものを 一つ えらんで ください。",
+
+                //4:"【4】１から５に何を 入れますか。文章ぶんしょうの 意味いみを 考えて、１・２・３・４から いちばん いい ものを 一つ えらんで ください。",
+                4:"【4】（ 　）に 何を いれますか。１・２・３・４から いちばん いいものを 一つ えらんで ください。",
+
+                5:"【5】 ★ に 入る ものは どれですか。１・２・３・４から いちばんいい ものを 一つ えらんで ください。",
+
+                6:"【6】読解問題です。つぎの文章を読んで、質問に答えてください。こたえは、１・２・３・４からいちばんよいものを一つえらんでください。"
+
+            };
+
+
+            sectionTitle.innerHTML =
+                titles[q.section];
+
+
+            list.appendChild(sectionTitle);
+
+
+            const info =
+                document.createElement("div");
+
+            info.className =
+                "section-info";
+
+
+            const infos = {
+
+                1:"10問（1問1点）",
+
+
+                2:"10問（1問2点）",
+
+                3:"10問（1問2点）",
+
+                4:"10問（1問3点）",
+
+                5:"2問（1問5点）",
+
+                6:"2問（1問5点）"
+
+            };
+
+
+            info.textContent =
+                infos[q.section];
+
+
+            list.appendChild(info);
+
+        }
+
+
+        /* 問題 */
+
+        const question =
+            document.createElement("div");
+
+        question.className =
+            "question";
+
+
+        question.innerHTML = `
+
+            <div class="question-number">
+                問${index + 1}
+                （${q.points}点）
+            </div>
+
+            ${
+                q.passageImage
+                ?
+                `
+                <img
+                    src="${q.passageImage}"
+                    alt="長文"
+                >
+                `
+                :
+                ""
+            }
+
+            <img
+                src="${q.image}"
+                alt="問題${index + 1}"
+            >
+
+            <div class="choices">
+
+                <label class="choice">
+
+                    <input
+                        type="radio"
+                        name="question${index}"
+                        value="1"
+                        onchange="selectChoice(this)"
+                    >
+
+                    ①
+
+                </label>
+
+
+                <label class="choice">
+
+                    <input
+                        type="radio"
+                        name="question${index}"
+                        value="2"
+                        onchange="selectChoice(this)"
+                    >
+
+                    ②
+
+                </label>
+
+
+                <label class="choice">
+
+                    <input
+                        type="radio"
+                        name="question${index}"
+                        value="3"
+                        onchange="selectChoice(this)"
+                    >
+
+                    ③
+
+                </label>
+
+
+                <label class="choice">
+
+                    <input
+                        type="radio"
+                        name="question${index}"
+                        value="4"
+                        onchange="selectChoice(this)"
+                    >
+
+                    ④
+
+                </label>
+
+            </div>
+
+        `;
+
+
+        list.appendChild(question);
+
+    });
+
+}
+
+
+/* ==================================================
+   選択肢クリック
+================================================== */
+
+function selectChoice(input){
+
+    const choices =
+        input.closest(".choices")
+        .querySelectorAll(".choice");
+
+    choices.forEach(choice => {
+
+        choice.classList.remove("selected");
+
+    });
+
+    input.closest(".choice")
+        .classList.add("selected");
+
+    // 回答状況を更新
+    updateAnswerStatus();
+
+}
+/* ==================================================
+   タイマー
+================================================== */
+
+function startTimer(){
+
+    updateTimer();
+
+
+    timerInterval =
+        setInterval(() => {
+
+            timeLeft--;
+
+            updateTimer();
+
+
+            if(timeLeft <= 0){
+
+                clearInterval(timerInterval);
+
+                alert(
+                    "時間になりました。自動的に提出します。"
+                );
+
+                submitExam(true);
+
+            }
+
+        },1000);
+
+}
+function updateAnswerStatus(){
+
+    let answered = 0;
+
+    examQuestions.forEach((q,index)=>{
+
+        const selected =
+            document.querySelector(
+                `input[name="question${index}"]:checked`
+            );
+
+        if(selected){
+            answered++;
+        }
+
+    });
+
+    document.getElementById("answeredCount")
+        .textContent = answered;
+
+}
+
+function updateTimer(){
+
+    const minutes =
+        Math.floor(timeLeft / 60);
+
+    const seconds =
+        timeLeft % 60;
+
+    document.getElementById("timeText")
+        .textContent =
+        "残り時間：" +
+        String(minutes).padStart(2,"0") +
+        ":" +
+        String(seconds).padStart(2,"0");
+
+}
+
+/* ==================================================
+   提出
+================================================== */
+
+/* ==================================================
+   提出
+================================================== */
+
+
+/* ==================================================
+   提出
+================================================== */
+
+let isSubmitting = false;
+
+
+async function submitExam(autoSubmit=false){
+
+    /* 二重送信防止 */
+
+    if(isSubmitting){
+        return;
+    }
+
+
+    /* --------------------------------
+       手動提出の場合
+    -------------------------------- */
+
+    if(!autoSubmit){
+
+        if(
+            !confirm(
+                "試験を提出しますか？\n\n" +
+                "提出後は変更できません。"
+            )
+        ){
+
+            return;
+
+        }
+
+    }
+
+
+    let score = 0;
+
+    const answers = [];
+
+    let unanswered = [];
+
+
+    /* --------------------------------
+       回答を取得
+    -------------------------------- */
+
+    examQuestions.forEach((q,index) => {
+
+        const selected =
+            document.querySelector(
+                `input[name="question${index}"]:checked`
+            );
+
+
+        if(!selected){
+
+            unanswered.push(index + 1);
+
+            answers.push("");
+
+            return;
+
+        }
+
+
+        const answer =
+            Number(selected.value);
+
+
+        answers.push(answer);
+
+
+        /* 採点 */
+
+        if(answer === q.answer){
+
+            score += q.points;
+
+        }
+
+    });
+
+
+    /* --------------------------------
+       未回答チェック
+    -------------------------------- */
+
+    if(unanswered.length > 0 && !autoSubmit){
+
+        alert(
+            "未回答の問題があります。\n\n" +
+            "未回答：" +
+            unanswered.join("、") +
+            "問\n\n" +
+            "すべての問題に回答してから提出してください。"
+        );
+
+        return;
+
+    }
+
+
+    /* --------------------------------
+       送信開始
+    -------------------------------- */
+
+    isSubmitting = true;
+
+
+    const submitButton =
+        document.getElementById("submitBtn");
+
+
+    submitButton.disabled = true;
+
+    submitButton.textContent =
+        "送信しています……";
+
+
+
+
+const data = {
+    name: userName,
+    examNumber: examNumber,
+    score: score,
+    total: examQuestions.length,
+    answers: answers,
+
+    // 実際に出題された問題と正誤判定
+    questions: examQuestions.map((q, index) => {
+
+        const studentAnswer = answers[index];
+
+        let result;
+
+        if (studentAnswer === "") {
+            result = "未回答";
+        } else if (Number(studentAnswer) === Number(q.answer)) {
+            result = "正解";
+        } else {
+            result = "不正解";
+        }
+
+        return {
+            number: index + 1,
+            section: q.section,
+            imageName: q.image,
+            passageImage: q.passageImage || "",
+            studentAnswer: studentAnswer,
+            correctAnswer: q.answer,
+            result: result,
+            points: q.points,
+            earnedPoints:
+                result === "正解" ? q.points : 0
+        };
+    })
+};
+
+
+
+    /* --------------------------------
+       Googleスプレッドシートへ送信
+    -------------------------------- */
+
+    const success =
+        await sendToGoogleSheet(data);
+
+
+    /* =================================
+       送信失敗
+    ================================= */
+
+    if(!success){
+
+        clearInterval(timerInterval);
+
+        isExamRunning = false;
+
+        isSubmitting = false;
+
+
+        showSendErrorScreen(answers);
+
+
+        return;
+
+    }
+
+/* =================================
+   送信成功
+================================= */
+
+clearInterval(timerInterval);
+
+isExamRunning = false;
+
+isSubmitting = false;
+
+
+/* 試験画面を非表示 */
+
+document
+    .getElementById("examScreen")
+    .style.display = "none";
+
+
+/* 警告画面を非表示 */
+
+document
+    .getElementById("warningScreen")
+    .style.display = "none";
+
+
+/* 送信失敗画面を非表示 */
+
+document
+    .getElementById("sendErrorScreen")
+    .style.display = "none";
+
+
+/* =========================
+   完了画面
+========================= */
+
+document
+    .getElementById("completeScreen")
+    .style.display = "block";
+
+
+/* 名前 */
+
+document
+    .getElementById("completeUserName")
+    .textContent = userName;
+
+
+/* 受験番号 */
+
+document
+    .getElementById("completeExamNumber")
+    .textContent = examNumber;
+
+
+/* =========================
+   解答一覧
+========================= */
+
+const list =
+    document.getElementById("completeAnswerList");
+
+list.innerHTML = "";
+
+
+const answerList =
+    document.createElement("div");
+
+answerList.className =
+    "complete-answer-list";
+
+
+answers.forEach((answer,index) => {
+
+    const item =
+        document.createElement("div");
+
+    item.className =
+        "complete-answer-item";
+
+
+    let answerText;
+
+
+    if(answer === ""){
+
+        answerText = "未回答";
+
+    }else{
+
+        answerText =
+            "①②③④".charAt(
+                Number(answer) - 1
+            );
+
+    }
+
+
+    item.textContent =
+        "問" +
+        (index + 1) +
+        "　" +
+        answerText;
+
+
+    answerList.appendChild(item);
+
+});
+
+
+list.appendChild(answerList);
+
+
+/* ページの一番上へ */
+
+window.scrollTo({
+    top:0,
+    behavior:"smooth"
+});
+
+}
+/* ==================================================
+   送信失敗画面
+================================================== */
+
+function showSendErrorScreen(answers){
+
+    /* 試験画面を非表示 */
+
+    document
+        .getElementById("examScreen")
+        .style.display = "none";
+
+
+    /* 警告画面を非表示 */
+
+    document
+        .getElementById("warningScreen")
+        .style.display = "none";
+
+
+    /* 送信失敗画面を表示 */
+
+    document
+        .getElementById("sendErrorScreen")
+        .style.display = "block";
+
+
+    /* 名前 */
+
+    document
+        .getElementById("errorUserName")
+        .textContent = userName;
+
+
+    /* 受験番号 */
+
+    document
+        .getElementById("errorExamNumber")
+        .textContent = examNumber;
+
+
+    /* 解答一覧 */
+
+    const list =
+        document.getElementById("answerOnlyList");
+
+
+    list.innerHTML = "";
+
+
+    const answerList =
+        document.createElement("div");
+
+
+    answerList.className =
+        "answer-list";
+
+
+    answers.forEach((answer,index) => {
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "answer-item";
+
+
+        let answerText = "";
+
+
+        if(answer === ""){
+
+            answerText = "未回答";
+
+        }else{
+
+            answerText =
+                "①②③④".charAt(
+                    Number(answer) - 1
+                );
+
+        }
+
+
+        item.textContent =
+            "問" +
+            (index + 1) +
+            "　" +
+            answerText;
+
+
+        answerList.appendChild(item);
+
+    });
+
+
+    list.appendChild(answerList);
+
+}
+/* ==================================================
+   Google Apps Script送信
+================================================== */
+
+async function sendToGoogleSheet(data){
+
+    const gasUrl =
+        "https://script.google.com/macros/s/AKfycbzHVi1IXzZHGPy7PbrWVyImK8ir3DFzayevqiKGl35Oqc2KfcWCtQ9TBU1U927x6TcViw/exec";
+
+
+    try{
+
+        await fetch(
+            gasUrl,
+            {
+                method:"POST",
+
+                mode:"no-cors",
+
+                headers:{
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body:
+                    new URLSearchParams({
+                        data:
+                            JSON.stringify(data)
+                    })
+            }
+        );
+
+
+        /*
+         * no-corsではレスポンス内容を
+         * 読み取れません。
+         *
+         * 通信そのものが成功した場合は
+         * 送信成功として扱います。
+         */
+
+        return true;
+
+
+    }catch(error){
+
+        console.error(
+            "送信エラー：",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
+/* ==================================================
+   試験に戻る
+================================================== */
+
+function returnToExam(){
+
+    document
+        .getElementById("warningScreen")
+        .style.display = "none";
+
+
+    document
+        .getElementById("examScreen")
+        .style.display = "block";
+
+}
+</script>
+
+</body>
+</html>
